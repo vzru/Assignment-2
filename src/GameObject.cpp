@@ -1,4 +1,3 @@
-// RU ZHANG 100421055 //
 // Kyle Disante - 100617178 //
 
 #include "GameObject.h"

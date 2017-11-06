@@ -1,95 +1,84 @@
-// RU ZHANG 100421055 //
 // Kyle Disante - 100617178 //
 #pragma once
 
 #include <glm/glm.hpp>
+#include <vector>
 
-// Params for each particle
-// Note: this is a bare minimum particle structure
-// Add any properties you want to control here
-struct Particle
-{
-	// Physics properties
-	// Position is where the particle currently is
-	// Velocity is the rate of change of position
-	// Acceleration is the rate of change of velocity
-	// p' = p + v*dt
-		// current position is the previous position plus the change in position multiplied by the amount of time passed since we last calculated position
-	// v' = v + a*dt
-	glm::vec3 position;
-	glm::vec3 velocity;
-	glm::vec3 acceleration;
-	glm::vec3 force;
-	float mass;
+class Particle;
+class Behavior;
+class Emitter;
 
-	// Visual Properties
-	float size;
-	glm::vec4 colour;
-	// Other properties... 
-	// ie. sprite sheet
+class Particle {
+public:
+	Particle();
+	~Particle();
 
-	float life;
+	void update(Emitter* e, float dt);
+	void init(Emitter* e);
+
+	glm::vec2 pos;
+	glm::vec2 vel;
+	glm::vec2 acc;
+	glm::vec2 force;
+	glm::vec2 size, targetSize;
+	glm::vec4 color, targetColor;
+
+	float mass, targetMass;
+	float life, totalLife;
 };
 
-// Emitter is responsible for emitting (creating, dispatching) particles
-class ParticleEmitter
-{
+class Behavior {
 public:
-private:
-	unsigned int m_pNumParticles;
-	Particle* m_pParticles;
+	Behavior();
+	~Behavior();
 
+	glm::vec2 update(Particle* p, float dt);
+
+	int type = 0;
+	glm::vec2 pos{ 0, 0 };
+	float weight = 1.f;
+	float mass = 10.f;
+};
+
+// vin is short for variation in
+// 0/1 are short for start/end
+class Emitter {
 public:
-	ParticleEmitter();
-	~ParticleEmitter();
-
-	void initialize(unsigned int numParticles);
-	void freeMemory();
+	Emitter();
+	~Emitter();
 
 	void update(float dt);
-	void draw();
 
-	void applyForceToParticle(unsigned int idx, glm::vec3 force);
+	bool show = true;
+	bool play = true;
 
-	//void setNumParticles(int particle);
+	// particle distribution properties
+	float freq, vinFreq;
+	float life, vinLife;
+	float duration;
+	int rate, maxParts;
 
-	unsigned int getNumParticles() { return m_pNumParticles; }
+	// emitter/initial properties
+	glm::vec2 pos{ 0.f, 0.f };
+	glm::vec2 vinPos{ 0.f, 0.f };
+	glm::vec2 vel{ 10.f, 10.f };
+	glm::vec2 vinVel{ 1.f, 1.f };
+	glm::vec2 grav{ 0.f, 9.81f };
+	glm::vec2 vinGrav{ 0.1f, 0.1f };
 
-	glm::vec3 getParticlePosition(unsigned int idx);
+	// start/end properties to lerp inbetween
+	int shape[3]{ 0, 0, 1 }; // start/end/emitter
+	glm::vec4 color[2]{ { 1.f, 0.f, 0.f, 1.f },{ 0.f, 0.f, 1.f, 1.f } };
+	glm::vec4 vinColor[2]{ { 0.f, 0.1f, 0.1f, 0.1f },{ 0.1f, 0.1f, 0.f, 0.1f } };
+	glm::vec2 size[2]{ { 5.f, 5.f },{ 5.f, 5.f } };
+	glm::vec2 vinSize[2]{ { 1.f, 1.f },{ 1.f, 1.f } };
+	float mass[2]{ 10.f, 10.f };
+	float vinMass[2]{ 0.1f, 0.1f };
 
-	///// Playback properties
-	bool playing;
+	int pathType = 0;
+	float pathWeight = 1.f;
 
-	//// Update flags
-	bool interpolateColour;
-
-	glm::vec3 applyGravity;
-	///// Initial properties for newly spawned particles
-
-	glm::vec3 emitterPosition;
-	// TODO: Add "box emitter" properties (float width, float height, bool enabled)
-	glm::vec3 emitterSize;
-	float gravity;
-	float emissionRate;
-	float emissionDelay;
-	float cooldown;
-
-	// Storing ranges for each property so each particle has some randomness
-	//glm::vec2 initialVelo;
-	glm::vec3 velocity0;
-	glm::vec3 velocity1;
-
-	// these properties are single floats, so we can pack the min and max into a vec2, just data!
-	glm::vec2 lifeRange;
-	glm::vec2 sizeRange;
-	glm::vec2 massRange;
-
-	glm::vec4 colour0;
-	glm::vec4 colour1;
-
-	// ... other properties
-	// ... what would be a better way of doing this?
-	// Make a keyframe controller for each property! this gives you max control!!
-	// See the KeyframeController class
-	// (this is what full out particle editors do, ie popcorn fx)
+	std::vector<Particle*> parts{};
+	std::vector<Behavior*> behaves{};
+	std::vector<glm::vec2*> path{};
 };
