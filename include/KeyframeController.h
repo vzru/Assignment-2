@@ -78,7 +78,7 @@ public:
 
 			// Calculate arc length column of table
 			int numEntries = m_pSpeedControlLookUpTable.size();
-			std::cout << numEntries << std::endl;
+			//std::cout << numEntries << std::endl;
 
 
 			if (numEntries == 0) // if you did the above loop correctly, this shouldnt happen
