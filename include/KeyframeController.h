@@ -5,6 +5,7 @@
 
 #pragma once
 #include "GameObject.h"
+#include "PointHandle.h"
 #include "AnimationMath.h"
 
 #include <vector>
@@ -15,7 +16,6 @@
 #include <GLUT/freeglut.h>
 #include <TTK/GraphicsUtils.h>
 #include <TTK/Camera.h>
-#include <PointHandle.h>
 
 template <typename T>
 struct SpeedControlTableRow

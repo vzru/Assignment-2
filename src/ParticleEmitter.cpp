@@ -114,7 +114,7 @@ void ParticleEmitter::update(float dt)
 				{
 					// calculate t value
 					float tVal = Math::invLerp(particle->life, lifeRange.x, lifeRange.y);
-					particle->colour = Math::lerp(colour0, colour1, tVal);
+					particle->colour = Math::lerp(colour1, colour0, tVal);
 				}
 			}
 		}
@@ -135,8 +135,8 @@ void ParticleEmitter::draw()
 	{
 		if (p->life >= 0.0f) // if particle is alive, draw it
 		{
-			TTK::Graphics::DrawPoint(p->position, p->size, p->colour);
-			//TTK::Graphics::DrawCube(p->position, p->size, p->colour);
+			TTK::Graphics::DrawCube(p->position, p->size, p->colour);
+			//TTK::Graphics::DrawPoint(p->position, p->size, p->colour);
 			//TTK::Graphics::DrawTeapot(p->position, p->size, p->colour); // low fps alert!! use with low particle count
 			// You can draw anything!
 			// ...but you should stick to points in this framework since it uses GL 1.0

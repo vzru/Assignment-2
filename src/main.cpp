@@ -104,7 +104,7 @@ void applyForcesToParticleSystem(ParticleEmitter* e, glm::vec3 target)
 void DisplayCallbackFunction(void)
 {
 	// Set up scene
-	TTK::Graphics::SetBackgroundColour(0.5f, 0.5f, 0.5f);
+	TTK::Graphics::SetBackgroundColour(0.1f, 0.1f, 0.1f);
 	TTK::Graphics::ClearScreen();
 	TTK::Graphics::SetCameraMode2D(windowWidth, windowHeight);
 
@@ -121,7 +121,7 @@ void DisplayCallbackFunction(void)
 
 	glm::vec3 interpolatedPosition = keyframeController.update(deltaTime);
 
-	//gameObject.setPosition(interpolatedPosition);
+	gameObject.setPosition(interpolatedPosition);
 	gameObject.update(deltaTime);
 	gameObject.draw();
 
@@ -197,6 +197,12 @@ void DisplayCallbackFunction(void)
 	{
 		std::cout << "Path clicked." << std::endl;
 		path = !path;
+	}
+
+	if (ImGui::Button("Changing Color"))
+	{
+		std::cout << "Color clicked." << std::endl;
+		emitter.interpolateColour = !emitter.interpolateColour;
 	}
 
 	if (ImGui::Button("Toggle Emitter Pause"))
