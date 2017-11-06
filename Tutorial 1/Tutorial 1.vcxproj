@@ -160,6 +160,7 @@
     <ClCompile Include="..\include\imgui\imgui_draw.cpp" />
     <ClCompile Include="..\include\imgui\imgui_impl.cpp" />
     <ClCompile Include="..\src\GameObject.cpp" />
+    <ClCompile Include="..\src\Helper.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\ParticleEmitter.cpp" />
     <ClCompile Include="..\src\PointHandle.cpp" />
@@ -171,6 +172,7 @@
   <ItemGroup>
     <ClInclude Include="..\include\AnimationMath.h" />
     <ClInclude Include="..\include\GameObject.h" />
+    <ClInclude Include="..\include\Helper.h" />
     <ClInclude Include="..\include\imgui\imgui.h" />
     <ClInclude Include="..\include\imgui\imgui_impl.h" />
     <ClInclude Include="..\include\imgui\imgui_internal.h" />

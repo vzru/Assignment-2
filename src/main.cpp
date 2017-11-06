@@ -8,6 +8,8 @@
 #include "GameObject.h"
 #include "AnimationMath.h"
 #include "ParticleEmitter.h"
+#include "KeyframeController.h"
+#include "PointHandle.h"
 #include "Helper.h"
 
 // Core Libraries (std::)
