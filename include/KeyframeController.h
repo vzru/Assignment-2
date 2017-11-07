@@ -46,7 +46,7 @@ public:
 		paused(false),
 		loops(true),
 		doesSpeedControl(false),
-		curvePlaySpeed(1.0f)
+		curvePlaySpeed(10.0f)
 	{
 
 	}
@@ -139,7 +139,7 @@ public:
 				//float arc1 = m_pSpeedControlLookUpTable[i].arcLengthNormalized; // current sample's normalized distance
 				float arc1 = m_pSpeedControlLookUpTable[i].arcLengthNormalized;
 				//float tVal = Math::invLerp(m_pKeyLocalTime, arc0, arc1); // "inverse lerp" i.e. given 3 points, solve the tValue
-				float tVal = Math::invCatmull(m_pKeyLocalTime, arc0, arc1);
+				float tVal = Math::invLerp(m_pKeyLocalTime, arc0, arc1);
 				
 				// calculate intermediate table
 				//T sample0 = m_pSpeedControlLookUpTable[i - 2].sampleValue;
