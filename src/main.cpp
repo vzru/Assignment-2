@@ -339,41 +339,43 @@ void MouseClickCallbackFunction(int button, int state, int x, int y)
 	//{
 	//	emitter.emitterPosition = mousePositionFlipped;
 	//}
-	if (path)
-	{
-		switch (state)
+	if (!ImGui::GetIO().WantCaptureMouse) {
+		if (path)
 		{
-		case GLUT_DOWN:
-			switch (button)
+			switch (state)
 			{
-				// On mouse left button down
-			case GLUT_LEFT_BUTTON:
-			{
-				int numHandles = pointHandles.size();
-				PointHandle newHandle(25.0f, mousePositionFlipped, std::to_string(numHandles));
-				pointHandles.push_back(newHandle);
-				keyframeController.addKey(mousePositionFlipped);
-			}
+			case GLUT_DOWN:
+				switch (button)
+				{
+					// On mouse left button down
+				case GLUT_LEFT_BUTTON:
+				{
+					int numHandles = pointHandles.size();
+					PointHandle newHandle(25.0f, mousePositionFlipped, std::to_string(numHandles));
+					pointHandles.push_back(newHandle);
+					keyframeController.addKey(mousePositionFlipped);
+				}
+				default:
+					break;
+				}
+
+			case GLUT_UP:
+				switch (button)
+				{
+					// on mouse left button up
+				case GLUT_LEFT_BUTTON:
+					// recalculate lookup table using 4 samples per segment
+					keyframeController.calculateLookupTable(4);
+					break;
+
+				default:
+					break;
+				}
+				break;
+
 			default:
 				break;
 			}
-
-		case GLUT_UP:
-			switch (button)
-			{
-				// on mouse left button up
-			case GLUT_LEFT_BUTTON:
-				// recalculate lookup table using 4 samples per segment
-				keyframeController.calculateLookupTable(4);
-				break;
-
-			default:
-				break;
-			}
-			break;
-
-		default:
-			break;
 		}
 	}
 }
@@ -412,16 +414,19 @@ void MouseMotionCallbackFunction(int x, int y)
 	//{
 	//	emitter.emitterPosition = mousePositionFlipped;
 	//}
-	if (path)
-	{
-		for (unsigned int i = 0; i < pointHandles.size(); i++)
-		{
-			if (pointHandles[i].isInside(mousePositionFlipped))
-			{
-				pointHandles[i].position = mousePositionFlipped;
-				keyframeController.setKey(i, mousePositionFlipped);
 
-				break;
+	if (!ImGui::GetIO().WantCaptureMouse) {
+		if (path)
+		{
+			for (unsigned int i = 0; i < pointHandles.size(); i++)
+			{
+				if (pointHandles[i].isInside(mousePositionFlipped))
+				{
+					pointHandles[i].position = mousePositionFlipped;
+					keyframeController.setKey(i, mousePositionFlipped);
+
+					break;
+				}
 			}
 		}
 	}
@@ -435,7 +440,10 @@ void MousePassiveMotionCallbackFunction(int x, int y)
 	mousePositionFlipped.x = x;
 	mousePositionFlipped.y = windowHeight - y;
 
-	emitters[0]->emitterPosition = mousePositionFlipped;
+
+	if (!ImGui::GetIO().WantCaptureMouse) {
+		emitters[0]->emitterPosition = mousePositionFlipped;
+	}
 }
 
 /* function main()
