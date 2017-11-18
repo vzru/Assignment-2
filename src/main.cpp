@@ -199,6 +199,13 @@ void DisplayCallbackFunction(void)
 		std::cout << "Path clicked." << std::endl;
 		path = !path;
 	}
+	if (ImGui::Button("Speed Control"))
+	{
+		std::cout << "Speed Control clicked." << std::endl;
+		keyframeController.doesSpeedControl = !keyframeController.doesSpeedControl;
+	}
+	if(keyframeController.doesSpeedControl)
+		ImGui::SliderFloat("Speed", &keyframeController.curvePlaySpeed, 0.0f, 10.0f);
 
 	if (ImGui::Button("Changing Color"))
 	{
@@ -260,6 +267,7 @@ void KeyboardUpCallbackFunction(unsigned char key, int x, int y)
 {
 	ImGuiIO& io = ImGui::GetIO();
 	io.KeysDown[key] = false;
+	io.AddInputCharacter((int)key);
 
 	switch (key)
 	{

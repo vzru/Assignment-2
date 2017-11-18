@@ -146,8 +146,10 @@ public:
 				//T sample1 = m_pSpeedControlLookUpTable[i - 1].sampleValue;
 				//T sample0 = m_pSpeedControlLookUpTable[i - 1].sampleValue;
 				//T sample0 = m_pSpeedControlLookUpTable[i - 1].sampleValue;
+				std::cout << tVal << " " << m_pKeyLocalTime << std::endl;
 
-
+				m_pCurrentKeyframe = i;
+				m_pNextKeyframe = i + 1;
 				//return Math::lerp(sample0, sample1, tVal);
 				return doCatmull(tVal);
 			}
@@ -210,26 +212,26 @@ public:
 		m_pKeys[idx] = key;
 	}
 
-	glm::vec3 doCatmull(float t)
+	T doCatmull(float t)
 	{
 		// Not enough points, return
-		if (pointHandles.size() < 4)
-			return glm::vec3();
+		if (m_pKeys.size() < 4)
+			return T();
 	
-		glm::vec3 p0, p1, p2, p3;
+		T p0, p1, p2, p3;
 	
 		// TODO: currently the spline is calculated using hard coded indices
 		// Implement the necessary logic to make this work for all points
-		if ((m_pNextKeyframe + 2) <= pointHandles.size() & m_pCurrentKeyframe >= 1)
+		if ((m_pNextKeyframe + 2) <= m_pKeys.size() & m_pCurrentKeyframe >= 1)
 		{
-			p0 = pointHandles[m_pCurrentKeyframe - 1].position;
-			p1 = pointHandles[m_pCurrentKeyframe].position;
-			p2 = pointHandles[m_pNextKeyframe].position;
-			p3 = pointHandles[m_pNextKeyframe + 1].position;
+			p0 = m_pKeys[m_pCurrentKeyframe - 1];
+			p1 = m_pKeys[m_pCurrentKeyframe];
+			p2 = m_pKeys[m_pNextKeyframe];
+			p3 = m_pKeys[m_pNextKeyframe + 1];
 		}
 		else
 		{
-			return glm::vec3();
+			return T();
 		}
 	
 		return catmullUMP(p0, p1, p2, p3, t);
@@ -240,17 +242,31 @@ public:
 		if (pointHandles.size() < 4)
 			return;
 	
-		for (int f = 1; f <= (pointHandles.size() - 3); f++)
+		for (int f = 0; f <= pointHandles.size() - 2; f++)
 		{
 			glm::vec3 p0, p1, p2, p3;
-			//std::cout << pointHandles.size() << " ; " << f << " ; " << m_pCurrentKeyframe << " ; " << m_pNextKeyframe << std::endl;
-			// TODO: This is hard coded to draw the first segment
-			// Implement the necessary logic to draw the entire path
-			p0 = pointHandles[f - 1].position;
-			p1 = pointHandles[f].position;
-			p2 = pointHandles[f + 1].position;
-			p3 = pointHandles[f + 2].position;
-	
+			if (!f)
+			{
+				p0 = pointHandles[f].position;
+			}
+			else
+			{
+				p0 = pointHandles[f - 1].position;
+			}
+			if (f == pointHandles.size() - 2)
+			{
+				p3 = pointHandles[f + 1].position;
+			}
+			else
+			{
+				p3 = pointHandles[f + 2].position;
+			}
+				//std::cout << pointHandles.size() << " ; " << f << " ; " << m_pCurrentKeyframe << " ; " << m_pNextKeyframe << std::endl;
+				// TODO: This is hard coded to draw the first segment
+				// Implement the necessary logic to draw the entire path
+				p1 = pointHandles[f].position;
+				p2 = pointHandles[f + 1].position;
+
 			// This loop samples the curve at the specified step rate and
 			// draws lines between the samples. Try playing around with the step value
 			// and observe what happens to the curve drawn.
