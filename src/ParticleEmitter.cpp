@@ -11,9 +11,32 @@
 ParticleEmitter::ParticleEmitter()
 	: m_pParticles(nullptr),
 	m_pNumParticles(0),
+	show(true),
 	playing(true),
-	interpolateColour(false)
+	interpolateColour(false),
+	//applyMagnetForce(false),
+	applySeekingForce(true),
+	velocity0(0.0f, 0.0f, 0.0f),
+	velocity1(1.0f, 1.0f, 0.0f),
+	massRange(0.5f, 1.0f),
+	applyGravity(0.f, 9.8f, false),
+	colour0(1.0f, 0.0f, 0.0f, 1.0f),
+	colour1(0.0f, 0.0f, 1.0f, 1.0f),
+	lifeRange(1.0f, 10.0f),
+	sizeRange(15.0f, 25.0f),
+	emitterSize(1.0f, 1.0f, false),
+	emissionDelay(0.0f),
+	emissionRate(100.0f),
+	cooldown(0.0f),
+	gravity(9.8f),
+	emitterPosition(0.0f),
+	selectedForce(0)
+	//seekingForceScale(100.0f),
+	//targetX(800.0f),
+	//targetY(500.f)
+
 {
+	initialize(100);
 }
 
 ParticleEmitter::~ParticleEmitter()
@@ -24,6 +47,8 @@ ParticleEmitter::~ParticleEmitter()
 void ParticleEmitter::initialize(unsigned int numParticles)
 {
 	freeMemory(); // destroy any existing particles
+
+	forces.push_back(glm::vec4(0.f, 0.f, 100.f, false));
 
 	if (numParticles > 0)
 	{
@@ -144,6 +169,47 @@ void ParticleEmitter::draw()
 	}
 }
 
+void ParticleEmitter::addForce(float x, float y, float seeking, bool mForce)
+{
+	forces.push_back(glm::vec4(mForce, x, y, seeking));
+	selectedForce = forces.size() - 1;
+}
+
+void ParticleEmitter::removeForce(int select)
+{
+	if (forces.size() > 1)
+		forces.erase(select + forces.begin());
+
+	if (selectedForce == forces.size())
+	{
+		selectedForce -= 1;
+	}
+}
+
+void ParticleEmitter::applyForcesToParticleSystem()
+{
+
+	// TODO: implement seeking
+	// Loop through each particle in the emitter and apply a seeking for to them
+	for (int i = 0; i < getNumParticles(); ++i)
+	{
+		m_pParticles[i].force = glm::vec3(0.f);
+		for (auto& f : forces)
+		{
+			glm::vec3 seekVector = glm::vec3(f.x, f.y, 0.f) - getParticlePosition(i);
+			glm::vec3 seekDirection = glm::normalize(seekVector);
+			if (f.w)
+			{
+				applyForceToParticle(i, seekDirection * f.z / glm::length(seekVector) * 50.f);
+			}
+			else
+			{
+				applyForceToParticle(i, seekDirection * f.z);
+			}
+		}
+	}
+}
+
 void ParticleEmitter::applyForceToParticle(unsigned int idx, glm::vec3 force)
 {
 	if (idx >= m_pNumParticles)
@@ -152,8 +218,10 @@ void ParticleEmitter::applyForceToParticle(unsigned int idx, glm::vec3 force)
 		return;
 	}
 
-	m_pParticles[idx].force = force;
+	m_pParticles[idx].force += force;
 }
+
+
 
 //void ParticleEmitter::setNumParticles(int particle)
 //{

@@ -1,2 +1,33 @@
-﻿  Tutorial 1.vcxproj -> C:\Users\100421055\Desktop\INFR 2310\Assignment 2\Assignment\x64\Debug\Tutorial 6.exe
+﻿  main.cpp
+c:\users\100421055\desktop\infr 2310\assignment 2\assignment\include\ttk\camera.h(32): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+c:\users\100421055\desktop\infr 2310\assignment 2\assignment\include\ttk\camera.h(45): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+c:\users\100421055\desktop\infr 2310\assignment 2\assignment\include\ttk\camera.h(46): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+c:\users\100421055\desktop\infr 2310\assignment 2\assignment\src\main.cpp(150): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+c:\users\100421055\desktop\infr 2310\assignment 2\assignment\src\main.cpp(173): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\100421055\desktop\infr 2310\assignment 2\assignment\src\main.cpp(174): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\100421055\desktop\infr 2310\assignment 2\assignment\src\main.cpp(224): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\100421055\desktop\infr 2310\assignment 2\assignment\src\main.cpp(225): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+c:\users\100421055\desktop\infr 2310\assignment 2\assignment\src\main.cpp(332): warning C4065: switch statement contains 'default' but no 'case' labels
+c:\users\100421055\desktop\infr 2310\assignment 2\assignment\src\main.cpp(377): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\100421055\desktop\infr 2310\assignment 2\assignment\src\main.cpp(378): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\100421055\desktop\infr 2310\assignment 2\assignment\src\main.cpp(380): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\100421055\desktop\infr 2310\assignment 2\assignment\src\main.cpp(381): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\100421055\desktop\infr 2310\assignment 2\assignment\src\main.cpp(404): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+c:\users\100421055\desktop\infr 2310\assignment 2\assignment\src\main.cpp(458): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\100421055\desktop\infr 2310\assignment 2\assignment\src\main.cpp(459): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\100421055\desktop\infr 2310\assignment 2\assignment\src\main.cpp(461): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\100421055\desktop\infr 2310\assignment 2\assignment\src\main.cpp(462): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\100421055\desktop\infr 2310\assignment 2\assignment\src\main.cpp(492): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\100421055\desktop\infr 2310\assignment 2\assignment\src\main.cpp(493): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+c:\users\100421055\desktop\infr 2310\assignment 2\assignment\include\keyframecontroller.h(273): warning C4305: 'initializing': truncation from 'double' to 'float'
+  c:\users\100421055\desktop\infr 2310\assignment 2\assignment\include\keyframecontroller.h(241): note: while compiling class template member function 'void KeyframeController<glm::vec3>::drawCatmull(void)'
+  c:\users\100421055\desktop\infr 2310\assignment 2\assignment\src\main.cpp(133): note: see reference to function template instantiation 'void KeyframeController<glm::vec3>::drawCatmull(void)' being compiled
+  c:\users\100421055\desktop\infr 2310\assignment 2\assignment\src\main.cpp(50): note: see reference to class template instantiation 'KeyframeController<glm::vec3>' being compiled
+c:\users\100421055\desktop\infr 2310\assignment 2\assignment\include\keyframecontroller.h(80): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  c:\users\100421055\desktop\infr 2310\assignment 2\assignment\include\keyframecontroller.h(55): note: while compiling class template member function 'void KeyframeController<glm::vec3>::calculateLookupTable(int)'
+  c:\users\100421055\desktop\infr 2310\assignment 2\assignment\src\main.cpp(419): note: see reference to function template instantiation 'void KeyframeController<glm::vec3>::calculateLookupTable(int)' being compiled
+c:\users\100421055\desktop\infr 2310\assignment 2\assignment\include\keyframecontroller.h(225): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
+  c:\users\100421055\desktop\infr 2310\assignment 2\assignment\include\keyframecontroller.h(216): note: while compiling class template member function 'glm::vec3 KeyframeController<glm::vec3>::doCatmull(float)'
+  c:\users\100421055\desktop\infr 2310\assignment 2\assignment\include\keyframecontroller.h(73): note: see reference to function template instantiation 'glm::vec3 KeyframeController<glm::vec3>::doCatmull(float)' being compiled
+  Tutorial 1.vcxproj -> C:\Users\100421055\Desktop\INFR 2310\Assignment 2\Assignment\x64\Debug\Tutorial 6.exe
   Tutorial 1.vcxproj -> C:\Users\100421055\Desktop\INFR 2310\Assignment 2\Assignment\x64\Debug\Tutorial 6.pdb (Partial PDB)

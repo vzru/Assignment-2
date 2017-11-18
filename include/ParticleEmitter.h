@@ -3,6 +3,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <vector>
 
 // Params for each particle
 // Note: this is a bare minimum particle structure
@@ -49,6 +50,12 @@ public:
 	void update(float dt);
 	void draw();
 
+	int selectedForce;
+
+	void addForce(float x = 0.f, float y = 0.f, float seeking = 100.f, bool mForce = false);
+	void removeForce(int select);
+
+	void applyForcesToParticleSystem();
 	void applyForceToParticle(unsigned int idx, glm::vec3 force);
 
 	//void setNumParticles(int particle);
@@ -59,6 +66,14 @@ public:
 
 	///// Playback properties
 	bool playing;
+	bool show;
+	bool applySeekingForce;
+
+	std::vector<glm::vec4> forces;
+	//float targetX = 0.f;
+	//float targetY = 0.f;
+	//float seekingForceScale;
+	//bool applyMagnetForce;
 
 	//// Update flags
 	bool interpolateColour;

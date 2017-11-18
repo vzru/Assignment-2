@@ -37,6 +37,7 @@ const float degToRad = 3.14159f / 180.0f;
 const float radToDeg = 180.0f / 3.14159f;
 
 float deltaTime = 0.0f; // amount of time since last update (set every frame in timer callback)
+int selectedEmitter = 0;
 
 // Mouse position in pixels
 glm::vec3 mousePosition; // x, y, 0
@@ -53,53 +54,45 @@ static std::vector<ParticleEmitter*> emitters;
 
 void InitializeScene()
 {
-	ParticleEmitter* emitter = new ParticleEmitter;
-	// Physics properties
-	emitter->velocity0 = glm::vec3(0.0f, 0.0f, 0.0f);
-	emitter->velocity1 = glm::vec3(1.0f, 1.0f, 0.0f);
-	emitter->massRange = glm::vec2(0.5f, 1.0f);
-	emitter->applyGravity = glm::vec3(0.f, 9.8f, false);
-		   
-	// Visual Properties
-	emitter->colour0 = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-	emitter->colour1 = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
-	emitter->lifeRange = glm::vec2(1.0f, 10.0f);
-	emitter->sizeRange = glm::vec2(15.0f, 25.0f);
-	emitter->emitterPosition = mousePositionFlipped;
-	emitter->emitterSize = glm::vec3(1.0f, 1.0f, false);
-	emitter->emissionDelay = 0.0f;
-	emitter->emissionRate = 100.0f;
-	emitter->cooldown = 0.0f;
+	//ParticleEmitter* emitter = new ParticleEmitter;
+	//// Physics properties
+	//emitter->velocity0 = glm::vec3(0.0f, 0.0f, 0.0f);
+	//emitter->velocity1 = glm::vec3(1.0f, 1.0f, 0.0f);
+	//emitter->massRange = glm::vec2(0.5f, 1.0f);
+	//emitter->applyGravity = glm::vec3(0.f, 9.8f, false);
+	//
+	//// Visual Properties
+	//emitter->colour0 = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+	//emitter->colour1 = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
+	//emitter->lifeRange = glm::vec2(1.0f, 10.0f);
+	//emitter->sizeRange = glm::vec2(15.0f, 25.0f);
+	//emitter->emitterPosition = mousePositionFlipped;
+	//emitter->emitterSize = glm::vec3(1.0f, 1.0f, false);
+	//emitter->emissionDelay = 0.0f;
+	//emitter->emissionRate = 100.0f;
+	//emitter->cooldown = 0.0f;
+	//emitter->gravity = 9.8f;
+	//
+	//
+	//// Create the particles
+	//emitter->initialize(100);
+	//emitters.push_back(emitter);
 
 
-	// Create the particles
-	emitter->initialize(100);
-
-	emitters.push_back(emitter);
+	emitters.push_back(new ParticleEmitter);
 	gameObject.setScale(50.0f); // when in 2D the rendering utilities use pixels as units
 	gameObject.mesh = std::make_shared<QuadMesh>();
 }
 
 // These values are controlled by imgui
 bool connectedEndpoints = false;
-bool applySeekingForce = true;
+//bool applySeekingForce = true;
 bool path = false;
 int numParticles = 100;
-float seekingForceScale = 100.0f;
+//float seekingForceScale = 100.0f;
 float minSeekingForceScale = -500.0f;
 float maxSeekingForceScale = 500.0f;
 
-void applyForcesToParticleSystem(ParticleEmitter* e, glm::vec3 target)
-{
-	// TODO: implement seeking
-	// Loop through each particle in the emitter and apply a seeking for to them
-	for (int i = 0; i < e->getNumParticles(); ++i)
-	{
-		glm::vec3 seekVector = target - e->getParticlePosition(i);
-		glm::vec3 seekDirection = glm::normalize(seekVector);
-		e->applyForceToParticle(i, seekDirection * seekingForceScale);
-	}
-}
 
 // This is where we draw stuff
 void DisplayCallbackFunction(void)
@@ -109,17 +102,25 @@ void DisplayCallbackFunction(void)
 	TTK::Graphics::ClearScreen();
 	TTK::Graphics::SetCameraMode2D(windowWidth, windowHeight);
 
-	// Apply forces on the particle system
-	if (applySeekingForce)
-		applyForcesToParticleSystem(emitters[0], glm::vec3(windowWidth*0.5f, windowHeight*0.5f, 0.0f));
-
 	//std::cout << windowHeight << ":" << windowWidth << std::endl;
-	// perform physics calculations for each particle
-	emitters[0]->update(deltaTime);
-
-	// draw the particles
-	emitters[0]->draw();
-
+	for (int i = 0; i < emitters.size(); i++)
+	{
+		// Apply forces on the particle system
+		if (emitters[i]->applySeekingForce)
+		{
+			emitters[i]->applyForcesToParticleSystem();
+		}
+		// perform physics calculations for each particle
+		if (emitters[i]->playing)
+		{
+			emitters[i]->update(deltaTime);
+		}
+		// draw the particles
+		if (emitters[i]->show)
+		{
+			emitters[i]->draw();
+		}
+	}
 	glm::vec3 interpolatedPosition = keyframeController.update(deltaTime);
 
 	gameObject.setPosition(interpolatedPosition);
@@ -140,20 +141,41 @@ void DisplayCallbackFunction(void)
 	TTK::Graphics::StartUI(windowWidth, windowHeight);
 
 
+	for (int i = 0; i < emitters.size(); i++) {
+		ImGui::SameLine();
+		ImGui::RadioButton(("Emit" + std::to_string(i)).c_str(), &selectedEmitter, i);
+	}
+	if (ImGui::Button("add")) {
+		emitters.push_back(new ParticleEmitter());
+		selectedEmitter = emitters.size() - 1;
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("remove")) {
+		if (emitters.size() > 1)
+			emitters.erase(selectedEmitter + emitters.begin());
 
+		if (selectedEmitter == emitters.size())
+		{
+			selectedEmitter -= 1;
+		}
+	}
 	// Draw a simple label, this is the same as a "printf" call
-	ImGui::Text("Particle Options. Number of particles = %d", emitters[0]->getNumParticles());
+	ImGui::Text("Particle Options. Number of particles = %d", emitters[selectedEmitter]->getNumParticles());
 
-	ImGui::SliderFloat("Emission Rate", &emitters[0]->emissionRate, 1.0f, 100.f);
+	ImGui::SliderFloat("Emission Rate", &emitters[selectedEmitter]->emissionRate, 1.0f, 100.f);
 
 	ImGui::SliderInt("Particle Amount", &numParticles, 0, 500);
 	if (ImGui::Button("Apply Particle Change"))
 	{
-		emitters[0]->initialize(numParticles);
+		emitters[selectedEmitter]->initialize(numParticles);
 	}
 
-	ImGui::SliderFloat("Life Range Min", &emitters[0]->lifeRange.x, 1.0f, emitters[0]->lifeRange.y);
-	ImGui::SliderFloat("Life Range Max", &emitters[0]->lifeRange.y, emitters[0]->lifeRange.x, 100.0f);
+	ImGui::SliderFloat("Emitter X", &emitters[selectedEmitter]->emitterPosition.x, 0, windowWidth);
+	ImGui::SliderFloat("Emitter Y", &emitters[selectedEmitter]->emitterPosition.y, 0, windowHeight);
+
+
+	ImGui::SliderFloat("Life Range Min", &emitters[selectedEmitter]->lifeRange.x, 1.0f, emitters[selectedEmitter]->lifeRange.y);
+	ImGui::SliderFloat("Life Range Max", &emitters[selectedEmitter]->lifeRange.y, emitters[selectedEmitter]->lifeRange.x, 100.0f);
 
 	// Button, when button is clicked the code in the block is executed
 
@@ -161,38 +183,64 @@ void DisplayCallbackFunction(void)
 	if (ImGui::Button("Toggle Box Emitter"))
 	{
 		std::cout << "Box Emitter Clicked." << std::endl;
-		emitters[0]->emitterSize.z = !emitters[0]->emitterSize.z;
+		emitters[selectedEmitter]->emitterSize.z = !emitters[selectedEmitter]->emitterSize.z;
 	}
-	if (emitters[0]->emitterSize.z)
+	if (emitters[selectedEmitter]->emitterSize.z)
 	{
-		ImGui::SliderFloat("Box width", &emitters[0]->emitterSize.x, 1, 100);
-		ImGui::SliderFloat("Box height", &emitters[0]->emitterSize.y, 1, 100);
+		ImGui::SliderFloat("Box width", &emitters[selectedEmitter]->emitterSize.x, 1, 100);
+		ImGui::SliderFloat("Box height", &emitters[selectedEmitter]->emitterSize.y, 1, 100);
 	}
 
 	// Color control
 	// Tip: You can click and drag the numbers in the UI to change them
-	ImGui::ColorEdit4("Start Color", &emitters[0]->colour0[0]);
-	ImGui::ColorEdit4("End Color", &emitters[0]->colour1[0]);
+	ImGui::ColorEdit4("Start Color", &emitters[selectedEmitter]->colour0[0]);
+	ImGui::ColorEdit4("End Color", &emitters[selectedEmitter]->colour1[0]);
+	if (ImGui::Button("Changing Color"))
+	{
+		std::cout << "Color clicked." << std::endl;
+		emitters[selectedEmitter]->interpolateColour = !emitters[selectedEmitter]->interpolateColour;
+	}
+
+	for (int i = 0; i < emitters[selectedEmitter]->forces.size(); i++) {
+		ImGui::SameLine();
+		ImGui::RadioButton(("Force" + std::to_string(i)).c_str(), &emitters[selectedEmitter]->selectedForce, i);
+	}
+	if (ImGui::Button("add force")) {
+		emitters[selectedEmitter]->addForce();
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("remove force")) {
+		emitters[selectedEmitter]->removeForce(emitters[selectedEmitter]->selectedForce);
+	}
 
 	if (ImGui::Button("Toggle Steering Force"))
 	{
 		std::cout << "Steering clicked." << std::endl;
-		applySeekingForce = !applySeekingForce;
+		emitters[selectedEmitter]->applySeekingForce = !emitters[selectedEmitter]->applySeekingForce;
 	}
-	if (applySeekingForce)
-		ImGui::SliderFloat("Steering Force", &seekingForceScale, minSeekingForceScale, maxSeekingForceScale);
+	if (emitters[selectedEmitter]->applySeekingForce)
+	{
+		ImGui::SliderFloat("Steering Force", &emitters[selectedEmitter]->forces[emitters[selectedEmitter]->selectedForce].z, minSeekingForceScale, maxSeekingForceScale);
+		ImGui::SliderFloat("Target X", &emitters[selectedEmitter]->forces[emitters[selectedEmitter]->selectedForce].x, 0, windowWidth);
+		ImGui::SliderFloat("Target Y", &emitters[selectedEmitter]->forces[emitters[selectedEmitter]->selectedForce].y, 0, windowHeight);
+		if (ImGui::Button("Toggle Magnet Force"))
+		{
+			std::cout << "Magnet clicked." << std::endl;
+			emitters[selectedEmitter]->forces[emitters[selectedEmitter]->selectedForce].w = !emitters[selectedEmitter]->forces[emitters[selectedEmitter]->selectedForce].w;
+		}
+	}
 
 
 	if (ImGui::Button("Toggle Gravity"))
 	{
 		std::cout << "Gravity clicked." << std::endl;
-		emitters[0]->applyGravity.z = !emitters[0]->applyGravity.z;
+		emitters[selectedEmitter]->applyGravity.z = !emitters[selectedEmitter]->applyGravity.z;
 	}
-	if (emitters[0]->applyGravity.z)
-		ImGui::SliderFloat("Gravity", &emitters[0]->gravity, 1.0f, 100.f);
+	if (emitters[selectedEmitter]->applyGravity.z)
+		ImGui::SliderFloat("Gravity", &emitters[selectedEmitter]->gravity, 1.0f, 100.f);
 
-	ImGui::DragFloatRange2("Initial Velocity in X", &emitters[0]->velocity0.x, &emitters[0]->velocity1.x, 0.25f, 0.0f, 100.0f, "Min: %.1f %", "Max: %.1f %");
-	ImGui::DragFloatRange2("Initial Velocity in Y", &emitters[0]->velocity0.y, &emitters[0]->velocity1.y, 0.25f, 0.0f, 100.0f, "Min: %.1f %", "Max: %.1f %");
+	ImGui::DragFloatRange2("Initial Velocity in X", &emitters[selectedEmitter]->velocity0.x, &emitters[selectedEmitter]->velocity1.x, 0.25f, -100.0f, 100.0f, "Min: %.1f %", "Max: %.1f %");
+	ImGui::DragFloatRange2("Initial Velocity in Y", &emitters[selectedEmitter]->velocity0.y, &emitters[selectedEmitter]->velocity1.y, 0.25f, -100.0f, 100.0f, "Min: %.1f %", "Max: %.1f %");
 
 	if (ImGui::Button("Create Path"))
 	{
@@ -204,19 +252,13 @@ void DisplayCallbackFunction(void)
 		std::cout << "Speed Control clicked." << std::endl;
 		keyframeController.doesSpeedControl = !keyframeController.doesSpeedControl;
 	}
-	if(keyframeController.doesSpeedControl)
+	if (keyframeController.doesSpeedControl)
 		ImGui::SliderFloat("Speed", &keyframeController.curvePlaySpeed, 0.0f, 10.0f);
-
-	if (ImGui::Button("Changing Color"))
-	{
-		std::cout << "Color clicked." << std::endl;
-		emitters[0]->interpolateColour = !emitters[0]->interpolateColour;
-	}
 
 	if (ImGui::Button("Toggle Emitter Pause"))
 	{
 		std::cout << "Pause clicked." << std::endl;
-		emitters[0]->playing = !emitters[0]->playing;
+		emitters[selectedEmitter]->playing = !emitters[selectedEmitter]->playing;
 	}
 	// imgui has TONS of UI functions
 	// Uncomment these two lines if you want to see a full imgui demo
@@ -345,10 +387,11 @@ void MouseClickCallbackFunction(int button, int state, int x, int y)
 	//
 	//if (!ImGui::IsMouseHoveringRect(ImGui::GetWindowPos(), ImVec2(ImGui::GetWindowPos().x + ImGui::GetWindowSize().x, ImGui::GetWindowPos().y + ImGui::GetWindowSize().y), 1))
 	//{
-	//	emitter.emitterPosition = mousePositionFlipped;
 	//}
 	if (!ImGui::GetIO().WantCaptureMouse) {
-		if (path)
+		if (!path)
+			emitters[selectedEmitter]->emitterPosition = mousePositionFlipped;
+		else if (path)
 		{
 			switch (state)
 			{
@@ -420,12 +463,13 @@ void MouseMotionCallbackFunction(int x, int y)
 
 	//if (!ImGui::IsMouseHoveringRect(ImGui::GetWindowPos(), ImVec2(ImGui::GetWindowPos().x + ImGui::GetWindowSize().x, ImGui::GetWindowPos().y + ImGui::GetWindowSize().y), 1))
 	//{
-	//	emitter.emitterPosition = mousePositionFlipped;
 	//}
 
 	if (!ImGui::GetIO().WantCaptureMouse) {
+		emitters[selectedEmitter]->emitterPosition = mousePositionFlipped;
 		if (path)
 		{
+			keyframeController.calculateLookupTable(4);
 			for (unsigned int i = 0; i < pointHandles.size(); i++)
 			{
 				if (pointHandles[i].isInside(mousePositionFlipped))
@@ -450,7 +494,7 @@ void MousePassiveMotionCallbackFunction(int x, int y)
 
 
 	if (!ImGui::GetIO().WantCaptureMouse) {
-		emitters[0]->emitterPosition = mousePositionFlipped;
+		//	emitters[selectedEmitter]->emitterPosition = mousePositionFlipped;
 	}
 }
 
